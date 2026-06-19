@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MoMo Tech – SDLC Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">M</div>
+        <div>
+          <h1>MoMo Tech Portal</h1>
+          <p>SDLC Development Tracker</p>
+        </div>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuth('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuth('signup')">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="li-email" placeholder="you@company.com"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="li-pass" placeholder="••••••••"/>
+        </div>
+        <div class="err" id="li-err"></div>
+        <br/>
+        <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+        <p class="demo-hint">Demo account: ama@momotech.com / demo123</p>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signup-form" style="display:none">
+        <div class="form-grid">
+          <div class="field">
+            <label>First name</label>
+            <input type="text" id="su-first" placeholder="Kwame"/>
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input type="text" id="su-last" placeholder="Mensah"/>
+          </div>
+          <div class="field full">
+            <label>Email</label>
+            <input type="email" id="su-email" placeholder="you@company.com"/>
+          </div>
+          <div class="field full">
+            <label>Department</label>
+            <select id="su-dept">
+              <option value="">Select department</option>
+              <option>Tech &amp; Service Delivery</option>
+              <option>Commercial Operations</option>
+              <option>Products &amp; Services</option>
+              <option>Finance</option>
+              <option>Marketing</option>
+              <option>Legal &amp; Compliance</option>
+              <option>Customer Experience</option>
+              <option>Operations</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Role</label>
+            <select id="su-role">
+              <option value="">Select role</option>
+              <option value="tech">Tech Team</option>
+              <option value="requestor">Requestor</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Password</label>
+            <input type="password" id="su-pass" placeholder="Min. 6 characters"/>
+          </div>
+        </div>
+        <div class="err" id="su-err"></div>
+        <br/>
+        <button class="btn btn-primary" onclick="doSignup()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" style="display:none">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <h2>MoMo Tech</h2>
+        <p>SDLC Tracker</p>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showPage('dashboard')">
+          <span class="nav-icon">⊞</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" onclick="showPage('requests')">
+          <span class="nav-icon">📄</span>
+          <span>All Requests</span>
+        </button>
+        <button class="nav-item" onclick="showPage('new-request')">
+          <span class="nav-icon">＋</span>
+          <span>New Request</span>
+        </button>
+        <button class="nav-item" onclick="showPage('my-requests')">
+          <span class="nav-icon">👤</span>
+          <span>My Requests</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="user-pill">
+          <div class="avatar" id="sidebar-avatar"></div>
+          <div class="user-info">
+            <div class="name" id="sidebar-name"></div>
+            <div class="dept" id="sidebar-dept"></div>
+          </div>
+          <button onclick="doLogout()" class="logout-btn" title="Sign out">⇥</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h2 id="dash-greeting">Good morning 👋</h2>
+          <p>Here's what's happening across all development requests.</p>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Recent Activity</h3></div>
+            <div class="activity-list" id="activity-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Requests by Type</h3></div>
+            <div id="type-breakdown"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Latest Requests</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showPage('requests')">View all</button>
+          </div>
+          <div class="table-wrap" id="recent-table"></div>
+        </div>
+      </div>
+
+      <!-- ALL REQUESTS PAGE -->
+      <div class="page" id="page-requests">
+        <div class="page-header">
+          <h2>All Requests</h2>
+          <p>Track the development lifecycle of every product request.</p>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search by product name or requester…" oninput="renderRequestsTable()"/>
+          <select id="filter-type" onchange="renderRequestsTable()">
+            <option value="">All types</option>
+            <option value="App">App</option>
+            <option value="BSS">BSS</option>
+            <option value="Core">Core</option>
+          </select>
+          <select id="filter-status" onchange="renderRequestsTable()">
+            <option value="">All statuses</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
+            <option value="Blocked">Blocked</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrap" id="all-requests-table"></div>
+        </div>
+      </div>
+
+      <!-- MY REQUESTS PAGE -->
+      <div class="page" id="page-my-requests">
+        <div class="page-header">
+          <h2>My Requests</h2>
+          <p>Requests submitted by you or assigned to your department.</p>
+        </div>
+        <div class="card">
+          <div class="table-wrap" id="my-requests-table"></div>
+        </div>
+      </div>
+
+      <!-- NEW REQUEST PAGE -->
+      <div class="page" id="page-new-request">
+        <div class="page-header">
+          <h2>New Product Request</h2>
+          <p>Submit a new development request to the Tech team.</p>
+        </div>
+        <div class="card" style="max-width:680px;">
+          <div class="section-label">Request Details</div>
+          <div class="form-grid">
+            <div class="field full">
+              <label>Product Name</label>
+              <input type="text" id="nr-name" placeholder="e.g. MoMo Savings Wallet"/>
+            </div>
+            <div class="field">
+              <label>Product Type</label>
+              <select id="nr-type" onchange="updatePhasePreview()">
+                <option value="">Select type</option>
+                <option value="App">App</option>
+                <option value="BSS">BSS</option>
+                <option value="Core">Core</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Priority</label>
+              <select id="nr-priority">
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Requester Name</label>
+              <input type="text" id="nr-requester" placeholder="Full name"/>
+            </div>
+            <div class="field">
+              <label>Department</label>
+              <select id="nr-dept">
+                <option value="">Select department</option>
+                <option>Tech &amp; Service Delivery</option>
+                <option>Commercial Operations</option>
+                <option>Products &amp; Services</option>
+                <option>Finance</option>
+                <option>Marketing</option>
+                <option>Legal &amp; Compliance</option>
+                <option>Customer Experience</option>
+                <option>Operations</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label>Description / Notes</label>
+              <textarea id="nr-desc" rows="3" placeholder="Brief description of the product request…"></textarea>
+            </div>
+            <div class="field">
+              <label>Start Date</label>
+              <input type="date" id="nr-start"/>
+            </div>
+          </div>
+          <div id="phase-preview" style="margin-top:8px;"></div>
+          <div class="err" id="nr-err"></div>
+          <br/>
+          <button class="btn btn-primary" onclick="submitRequest()" style="width:auto; padding:12px 32px;">
+            Submit Request
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REQUEST DETAIL MODAL -->
+  <div class="modal-overlay" id="detail-modal" style="display:none;" onclick="closeModalOutside(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-title">Request Detail</h3>
+          <div id="modal-meta" style="margin-top:4px; display:flex; gap:8px; align-items:center;"></div>
+        </div>
+        <button class="close-btn" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-cab-banner"></div>
+        <div class="section-label">Overview</div>
+        <div id="modal-overview"></div>
+        <div class="section-label" style="margin-top:20px;">Progress</div>
+        <div class="progress-bar" style="height:8px;">
+          <div class="progress-fill" id="modal-progress-fill"></div>
+        </div>
+        <div style="margin-top:6px; font-size:12px; color:#7B8BAE;" id="modal-progress-text"></div>
+        <div class="section-label" style="margin-top:20px;">Phase Timeline</div>
+        <div class="phases-list" id="modal-phases"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-primary" id="modal-save-btn" onclick="savePhases()" style="width:auto;">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
