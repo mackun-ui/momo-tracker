@@ -208,15 +208,15 @@
               <label>Product Name</label>
               <input type="text" id="nr-name" placeholder="e.g. MoMo Savings Wallet"/>
             </div>
-            <div class="field">
+            <div class="field full">
               <label>Product Type</label>
-              <select id="nr-type" onchange="updatePhasePreview()">
-                <option value="">Select type</option>
-                <option value="App">App</option>
-                <option value="BSS">BSS</option>
-                <option value="Core">Core</option>
-                <option value="Other">Other</option>
-              </select>
+              <div class="type-checkboxes" id="nr-type-boxes">
+                <label class="chk-label"><input type="checkbox" value="App" onchange="updatePhasePreview()"> App</label>
+                <label class="chk-label"><input type="checkbox" value="BSS" onchange="updatePhasePreview()"> BSS</label>
+                <label class="chk-label"><input type="checkbox" value="Core" onchange="updatePhasePreview()"> Core</label>
+                <!-- <label class="chk-label"><input type="checkbox" value="Other" onchange="toggleOtherType(this)"> Other</label> -->
+              </div>
+             <!-- <input type="text" id="nr-other-type" placeholder="Describe the product type(s) e.g. App + Core integration" style="display:none;margin-top:8px;" oninput="updatePhasePreview()"/> -->
             </div>
             <div class="field">
               <label>Priority</label>
@@ -276,16 +276,22 @@
         </div>
         <button class="close-btn" onclick="closeModal()">×</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="modal-body">
         <div id="modal-cab-banner"></div>
+        <div id="modal-overdue-banner"></div>
         <div class="section-label">Overview</div>
         <div id="modal-overview"></div>
         <div class="section-label" style="margin-top:20px;">Progress</div>
         <div class="progress-bar" style="height:8px;">
           <div class="progress-fill" id="modal-progress-fill"></div>
         </div>
-        <div style="margin-top:6px; font-size:12px; color:#7B8BAE;" id="modal-progress-text"></div>
-        <div class="section-label" style="margin-top:20px;">Phase Timeline</div>
+        <div style="margin-top:6px;font-size:12px;color:#7B8BAE;" id="modal-progress-text"></div>
+        <div class="section-label" style="margin-top:20px;">Gantt Chart</div>
+        <div id="gantt-section"></div>
+        <div class="section-label" style="margin-top:20px;">
+          Phase Timeline
+        <button class="btn btn-secondary btn-sm" style="margin-left:12px;font-size:11px;" onclick="openAddPhaseModal()">+ Add Custom Phase</button>
+        </div>
         <div class="phases-list" id="modal-phases"></div>
       </div>
       <div class="modal-footer">
@@ -293,6 +299,39 @@
         <button class="btn btn-primary" id="modal-save-btn" onclick="savePhases()" style="width:auto;">
           Save Changes
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CUSTOM PHASE MODAL -->
+  <div class="modal-overlay" id="add-phase-modal" style="display:none;" onclick="closeAddPhaseModalOutside(event)">
+    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add Custom Phase</h3>
+        <button class="close-btn" onclick="closeAddPhaseModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Phase Name</label>
+          <input type="text" id="custom-phase-name" placeholder="e.g. Security Audit"/>
+        </div>
+        <div class="field">
+          <label>Insert after phase</label>
+          <select id="custom-phase-after"></select>
+        </div>
+        <div class="field">
+          <label>Start Date</label>
+          <input type="date" id="custom-phase-start"/>
+        </div>
+        <div class="field">
+          <label>End Date</label>
+          <input type="date" id="custom-phase-end"/>
+        </div>
+        <div class="err" id="custom-phase-err"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeAddPhaseModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmAddPhase()" style="width:auto;">Add Phase</button>
       </div>
     </div>
   </div>
